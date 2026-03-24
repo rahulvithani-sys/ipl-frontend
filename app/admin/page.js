@@ -24,7 +24,7 @@ export default function Admin() {
 
     const user = JSON.parse(localStorage.getItem("user"));
 
-    if (!user || user.mobile !== "9999999999") {
+    if (!user || user.mobile !== "9820383884") {
       alert("Not authorized");
       window.location.href = "/dashboard";
       return;
