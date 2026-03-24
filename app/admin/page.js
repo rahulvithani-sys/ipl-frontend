@@ -35,8 +35,8 @@ export default function Admin() {
   }, []);
 
   const loadMatches = async () => {
-    const pendingRes = await axios.get("http://localhost:5000/matches/pending");
-    const completedRes = await axios.get("http://localhost:5000/matches/completed");
+    const pendingRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/matches/pending`);
+    const completedRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/matches/completed`);
 
     setPendingMatches(pendingRes.data);
     setCompletedMatches(completedRes.data);
@@ -48,7 +48,7 @@ export default function Admin() {
       return;
     }
 
-    await axios.post("http://localhost:5000/matches/add", form);
+    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/matches/add`, form);
     alert("Match added");
     loadMatches();
   };
@@ -61,7 +61,7 @@ export default function Admin() {
       return;
     }
 
-    await axios.post("http://localhost:5000/results/process", {
+    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/results/process`, {
       match_id: matchId,
       winner
     });
@@ -73,7 +73,7 @@ export default function Admin() {
   const rollback = async (matchId) => {
     if (!confirm("Rollback this match?")) return;
 
-    await axios.post("http://localhost:5000/results/rollback", {
+    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/results/rollback`, {
       match_id: matchId
     });
 
@@ -84,7 +84,7 @@ export default function Admin() {
   const abandon = async (matchId) => {
     if (!confirm("Mark match abandoned?")) return;
 
-    await axios.post("http://localhost:5000/results/abandon", {
+    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/results/abandon`, {
       match_id: matchId
     });
 

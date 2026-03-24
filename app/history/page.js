@@ -17,7 +17,7 @@ export default function History() {
     const user = JSON.parse(localStorage.getItem("user"));
 
     const res = await axios.get(
-      `http://localhost:5000/history/${user.id}`
+      `${process.env.NEXT_PUBLIC_API_URL}/history/${user.id}`
     );
 
     setData(res.data);

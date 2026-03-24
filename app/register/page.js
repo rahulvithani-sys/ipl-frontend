@@ -56,7 +56,7 @@ export default function Register() {
 
       // 1️⃣ create user
       const res = await axios.post(
-        "http://localhost:5000/auth/register",
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
         { mobile, name, password }
       );
 
@@ -64,7 +64,7 @@ export default function Register() {
 
       // 2️⃣ save defaults
       await axios.post(
-        "http://localhost:5000/defaults/set",
+        `${process.env.NEXT_PUBLIC_API_URL}/defaults/set`,
         {
           user_id: user.id,
           teams: defaults

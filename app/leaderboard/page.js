@@ -16,12 +16,11 @@ export default function Leaderboard() {
 
   const load = async () => {
 
-    const overall = await axios.get(
-      "http://localhost:5000/leaderboard"
-    );
+    const overall = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/leaderboard`);
+    
 
     const phaseRes = await axios.get(
-      `http://localhost:5000/leaderboard/phase/${phase}`
+      `${process.env.NEXT_PUBLIC_API_URL}/leaderboard/phase/${phase}`
     );
 
     setData(overall.data);

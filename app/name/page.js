@@ -30,7 +30,7 @@ export default function NamePage() {
     const user = JSON.parse(localStorage.getItem("user"));
 
     const res = await axios.post(
-      "http://localhost:5000/auth/update-name",
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/update-name`,
       {
         user_id: user.id,
         name

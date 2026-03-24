@@ -28,24 +28,24 @@ export default function Dashboard() {
 
       // 🔹 Balance
       const balanceRes = await axios.get(
-        `http://localhost:5000/balance/${user.id}`
+        `${process.env.NEXT_PUBLIC_API_URL}/balance/${user.id}`
       );
       setBalance(balanceRes.data.balance);
 
       // 🔹 Pool
       const poolRes = await axios.get(
-        "http://localhost:5000/pool"
+        `${process.env.NEXT_PUBLIC_API_URL}/pool`
       );
       setPool(poolRes.data);
 
       // 🔹 Matches
       const matchRes = await axios.get(
-        "http://localhost:5000/matches/upcoming"
+        `${process.env.NEXT_PUBLIC_API_URL}/matches/upcoming`
       );
 
       // 🔹 Picks
       const picksRes = await axios.get(
-        `http://localhost:5000/picks/${user.id}`
+        `${process.env.NEXT_PUBLIC_API_URL}/picks/${user.id}`
       );
 
       const pickMap = {};
@@ -75,7 +75,7 @@ export default function Dashboard() {
     try {
 
       await axios.post(
-        "http://localhost:5000/picks/submit",
+        `${process.env.NEXT_PUBLIC_API_URL}/picks/submit`,
         {
           user_id: user.id,
           match_id: matchId,
