@@ -140,7 +140,7 @@ export default function Dashboard() {
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
             }}>
 
-              <h3>{m.team1} vs {m.team2}</h3>
+              <h3>{m.team1} ({m.team1_count || 0}) vs {m.team2} ({m.team2_count || 0})</h3>
 
               <p style={{ fontSize: 14, color: "#555" }}>
                 Starts: {new Date(m.start_time).toLocaleString()}
