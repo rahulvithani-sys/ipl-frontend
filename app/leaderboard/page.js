@@ -5,147 +5,146 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 
 export default function Leaderboard() {
+const [data, setData] = useState([]);
+const [phaseData, setPhaseData] = useState([]);
+const [phase, setPhase] = useState(1);
 
-  const [data, setData] = useState([]);
-  const [phaseData, setPhaseData] = useState([]);
-  const [phase, setPhase] = useState(1);
+useEffect(() => {
+load();
+}, [phase]);
 
-  useEffect(() => {
-    load();
-  }, [phase]);
+const load = async () => {
+const overall = await axios.get(
+`${process.env.NEXT_PUBLIC_API_URL}/leaderboard`
+);
 
-  const load = async () => {
+const phaseRes = await axios.get(
+`${process.env.NEXT_PUBLIC_API_URL}/leaderboard/phase/${phase}`
+);
 
-    const overall = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/leaderboard`);
-    
+setData(overall.data);
+setPhaseData(phaseRes.data);
+};
 
-    const phaseRes = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/leaderboard/phase/${phase}`
-    );
+return (
+<div className="min-h-screen bg-[#0b0f1a] text-white">
 
-    setData(overall.data);
-    setPhaseData(phaseRes.data);
-  };
+<Navbar />
 
-  return (
+<div className="max-w-5xl mx-auto p-6">
 
-    <div>
+{/* ================= OVERALL ================= */}
+<h2 className="text-2xl font-bold mb-6 text-yellow-400">
+🏆 Overall Leaderboard
+</h2>
 
-      <Navbar />
+<div className="bg-[#111827] rounded-xl overflow-hidden shadow-lg">
+<table className="w-full text-center">
 
-      <div style={{ padding: 40, maxWidth: 900, margin: "auto" }}>
+<thead className="bg-gray-800 text-gray-300">
+<tr>
+<th className="p-3">Rank</th>
+<th className="p-3">Name</th>
+<th className="p-3">Balance (₹)</th>
+<th className="p-3">Points</th>
+<th className="p-3">Wins</th>
+</tr>
+</thead>
 
-        {/* ================= OVERALL ================= */}
-        <h2>🏆 Overall Leaderboard</h2>
+<tbody>
+{data.map((u, i) => (
+<tr
+key={u.id}
+className={`border-b border-gray-700 ${
+i === 0
+? "bg-yellow-400 text-black font-bold"
+: i === 1
+? "bg-gray-300 text-black font-semibold"
+: i === 2
+? "bg-orange-400 text-black font-semibold"
+: "hover:bg-gray-800"
+}`}
+>
+<td className="p-3">#{i + 1}</td>
+<td className="p-3">{u.name}</td>
+<td className="p-3">
+{Number(u.balance).toFixed(2)}
+</td>
+<td className="p-3">
+{Number(u.total_points || 0).toFixed(2)}
+</td>
+<td className="p-3">{u.wins}</td>
+</tr>
+))}
+</tbody>
 
-        <table style={table}>
-          <thead>
-            <tr style={header}>
-              <th style={th}>Rank</th>
-              <th style={th}>Name</th>
-              <th style={th}>Balance (₹)</th>
-              <th style={th}>Points</th>
-              <th style={th}>Wins</th>
-            </tr>
-          </thead>
+</table>
+</div>
 
-          <tbody>
-            {data.map((u, i) => (
-              <tr key={u.id} style={{
-                ...row,
-                background:
-                  i === 0 ? "#ffd700" :
-                  i === 1 ? "#c0c0c0" :
-                  i === 2 ? "#cd7f32" : ""
-              }}>
-                <td style={td}>#{i + 1}</td>
-                <td style={td}>{u.name}</td>
-                <td style={td}>{Number(u.balance).toFixed(2)}</td>
-                <td style={td}>{Number(u.total_points || 0).toFixed(2)}</td>
-                <td style={td}>{u.wins}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+{/* ================= PHASE ================= */}
+<div className="mt-12">
 
-        {/* ================= PHASE ================= */}
-        <div style={{ marginTop: 50 }}>
+<h2 className="text-2xl font-bold mb-4 text-orange-400">
+🔥 Phase Leaderboard
+</h2>
 
-          <h2>🔥 Phase Leaderboard</h2>
+<div className="mb-4">
+<label className="mr-2">Select Phase:</label>
 
-          <div style={{ marginBottom: 20 }}>
-            <label>Select Phase: </label>
+<select
+value={phase}
+onChange={(e) => setPhase(e.target.value)}
+className="bg-gray-800 border border-gray-600 rounded px-3 py-1"
+>
+<option value="1">Phase 1</option>
+<option value="2">Phase 2</option>
+<option value="3">Phase 3</option>
+<option value="4">Phase 4</option>
+<option value="5">Phase 5</option>
+</select>
+</div>
 
-            <select
-              value={phase}
-              onChange={(e) => setPhase(e.target.value)}
-              style={{ padding: 8, marginLeft: 10 }}
-            >
-              <option value="1">Phase 1</option>
-              <option value="2">Phase 2</option>
-              <option value="3">Phase 3</option>
-              <option value="4">Phase 4</option>
-              <option value="5">Phase 5</option>
-            </select>
-          </div>
+<div className="bg-[#111827] rounded-xl overflow-hidden shadow-lg">
+<table className="w-full text-center">
 
-          <table style={table}>
-            <thead>
-              <tr style={header}>
-                <th style={th}>Rank</th>
-                <th style={th}>Name</th>
-                <th style={th}>Points</th>
-              </tr>
-            </thead>
+<thead className="bg-gray-800 text-gray-300">
+<tr>
+<th className="p-3">Rank</th>
+<th className="p-3">Name</th>
+<th className="p-3">Points</th>
+</tr>
+</thead>
 
-            <tbody>
-              {phaseData.map((u, i) => (
-                <tr key={u.id} style={{
-                  ...row,
-                  background:
-                    i === 0 ? "#ffd700" :
-                    i === 1 ? "#c0c0c0" :
-                    i === 2 ? "#cd7f32" : ""
-                }}>
-                  <td style={td}>#{i + 1}</td>
-                  <td style={td}>{u.name}</td>
-                  <td style={td}>{Number(u.total_points || 0).toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+<tbody>
+{phaseData.map((u, i) => (
+<tr
+key={u.id}
+className={`border-b border-gray-700 ${
+i === 0
+? "bg-yellow-400 text-black font-bold"
+: i === 1
+? "bg-gray-300 text-black font-semibold"
+: i === 2
+? "bg-orange-400 text-black font-semibold"
+: "hover:bg-gray-800"
+}`}
+>
+<td className="p-3">#{i + 1}</td>
+<td className="p-3">{u.name}</td>
+<td className="p-3">
+{Number(u.total_points || 0).toFixed(2)}
+</td>
+</tr>
+))}
+</tbody>
 
-        </div>
+</table>
+</div>
 
-      </div>
+</div>
 
-    </div>
-  );
+</div>
+
+</div>
+);
 }
-
-
-// ================= STYLES =================
-
-const table = {
-  width: "100%",
-  borderCollapse: "collapse",
-  marginTop: 20
-};
-
-const header = {
-  background: "#f5f5f5"
-};
-
-const th = {
-  padding: 10,
-  borderBottom: "2px solid #ccc"
-};
-
-const td = {
-  padding: 10,
-  textAlign: "center"
-};
-
-const row = {
-  borderBottom: "1px solid #ddd"
-};

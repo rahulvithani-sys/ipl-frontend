@@ -2,147 +2,152 @@
 
 import { useState } from "react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 
-const teams = ["MI","CSK","RCB","GT","KKR","RR","SRH","LSG","PBKS","DC"];
+const teams = ["MI","CSK","RCB","KKR","SRH","DC","RR","LSG","PBKS","GT"];
 
 export default function Register() {
 
-  const [mobile, setMobile] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [defaults, setDefaults] = useState(Array(10).fill(""));
+const [mobile, setMobile] = useState("");
+const [name, setName] = useState("");
+const [password, setPassword] = useState("");
+const [defaults, setDefaults] = useState(Array(10).fill(""));
+const [loading, setLoading] = useState(false);
 
-  const router = useRouter();
+const updateDefault = (index, value) => {
+const copy = [...defaults];
+copy[index] = value;
+setDefaults(copy);
+};
 
-  // ================= DEFAULT CHANGE =================
-  const updateDefault = (index, value) => {
+const validate = () => {
+if (!mobile || mobile.length < 10) {
+alert("Enter valid mobile number");
+return false;
+}
 
-    const newDefaults = [...defaults];
-    newDefaults[index] = value;
-    setDefaults(newDefaults);
-  };
+if (!name) {
+alert("Enter name");
+return false;
+}
 
-  // ================= VALIDATION =================
-  const validateDefaults = () => {
+if (!password || password.length < 4) {
+alert("Password too short");
+return false;
+}
 
-    // all selected
-    if (defaults.includes("")) {
-      alert("Please select all 10 teams");
-      return false;
-    }
+const uniqueTeams = new Set(defaults);
+if (uniqueTeams.size !== 10) {
+alert("Select all 10 different teams");
+return false;
+}
 
-    // duplicates
-    const unique = new Set(defaults);
-    if (unique.size !== 10) {
-      alert("Each team must be selected only once");
-      return false;
-    }
+return true;
+};
 
-    return true;
-  };
+const register = async () => {
 
-  // ================= REGISTER =================
-  const register = async () => {
+if (!validate()) return;
 
-    if (!mobile || !name || !password) {
-      alert("Fill all details");
-      return;
-    }
+try {
+setLoading(true);
 
-    if (!validateDefaults()) return;
+await axios.post(
+`${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+{
+mobile,
+name,
+password,
+defaults,
+}
+);
 
-    try {
+alert("Registered successfully");
+window.location.href = "/login";
 
-      // 1️⃣ create user
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
-        { mobile, name, password }
-      );
+} catch (err) {
 
-      const user = res.data;
+console.log("FULL ERROR:", err);
 
-      // 2️⃣ save defaults
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/defaults/set`,
-        {
-          user_id: user.id,
-          teams: defaults
-        }
-      );
+let msg = "Registration failed";
 
-      alert("Registration complete");
+if (err.response) {
+const data = err.response.data;
 
-      router.push("/login");
+// Handle multiple backend formats
+if (typeof data === "string") {
+msg = data;
+} else if (data.error) {
+msg = data.error;
+} else if (data.message) {
+msg = data.message;
+}
+}
 
-    } catch (err) {
-      alert(err.response?.data?.message || "Error registering");
-    }
-  };
+alert(msg);
+} finally{setLoading(false)};
+};
 
-  return (
+return (
+<div className="min-h-screen flex items-center justify-center bg-[#0b0f1a] text-white">
 
-    <div style={{ padding: 40, maxWidth: 600, margin: "auto" }}>
+<div className="bg-[#111827] p-8 rounded-2xl w-full max-w-lg shadow-xl">
 
-      <h2>Register</h2>
+<h1 className="text-2xl font-bold text-yellow-400 mb-6 text-center">
+🏏 Register
+</h1>
 
-      <input
-        placeholder="Mobile"
-        value={mobile}
-        onChange={(e) => setMobile(e.target.value)}
-      />
+<input
+placeholder="Mobile"
+value={mobile}
+onChange={(e) => setMobile(e.target.value)}
+className="w-full mb-3 p-3 rounded-lg bg-[#1f2937] border border-gray-700"
+/>
 
-      <br /><br />
+<input
+placeholder="Name"
+value={name}
+onChange={(e) => setName(e.target.value)}
+className="w-full mb-3 p-3 rounded-lg bg-[#1f2937] border border-gray-700"
+/>
 
-      <input
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+<input
+type="password"
+placeholder="Password"
+value={password}
+onChange={(e) => setPassword(e.target.value)}
+className="w-full mb-6 p-3 rounded-lg bg-[#1f2937] border border-gray-700"
+/>
 
-      <br /><br />
+<h2 className="text-yellow-400 mb-3">
+Default Teams (Priority Order)
+</h2>
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+<div className="grid grid-cols-2 gap-3 mb-6">
+{defaults.map((d, i) => (
+<select
+key={i}
+value={d}
+onChange={(e) => updateDefault(i, e.target.value)}
+className="p-2 rounded-lg bg-[#1f2937] border border-gray-700"
+>
+<option value="">Rank {i + 1}</option>
+{teams.map((t) => (
+<option key={t}>{t}</option>
+))}
+</select>
+))}
+</div>
 
-      <br /><br />
+<button
+onClick={register}
+disabled={loading}
+className="w-full bg-yellow-500 hover:bg-yellow-600 text-black p-3 rounded-lg font-bold disabled:opacity-50"
+>
+{loading ? "Registering..." : "Register"}
+</button>
 
-      <h3>Select Default Teams (Priority Order)</h3>
+</div>
 
-      {defaults.map((d, i) => (
-
-        <div key={i} style={{ marginBottom: 10 }}>
-
-          <label>Rank {i + 1}: </label>
-
-          <select
-            value={d}
-            onChange={(e) => updateDefault(i, e.target.value)}
-          >
-            <option value="">Select Team</option>
-
-            {teams.map(t => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-
-          </select>
-
-        </div>
-
-      ))}
-
-      <br />
-
-      <button onClick={register}>
-        Register
-      </button>
-
-    </div>
-  );
+</div>
+);
 }

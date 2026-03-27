@@ -1,57 +1,72 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function Navbar() {
+const [user, setUser] = useState(null);
 
-  const router = useRouter();
+useEffect(() => {
+const u = JSON.parse(localStorage.getItem("user"));
+setUser(u);
+}, []);
 
-  const logout = () => {
-    localStorage.removeItem("user");
-    router.push("/login");
-  };
+const handleLogout = () => {
+localStorage.removeItem("user");
+window.location.href = "/login";
+};
 
-  return (
+return (
+<div className="bg-[#0b0f1a] border-b border-gray-800 px-6 py-3 text-yellow-400">
 
-    <div style={{
-      display: "flex",
-      justifyContent: "space-between",
-      padding: "15px 30px",
-      background: "#111",
-      color: "white"
-    }}>
+{/* TOP BAR */}
+<div className="flex justify-between items-center mb-3">
 
-      <div style={{ display: "flex", gap: 20 }}>
+<div className="text-xl font-bold">
+🏏 IPL Predictor
+</div>
 
-        <span style={{ cursor: "pointer" }} onClick={() => router.push("/dashboard")}>
-          Dashboard
-        </span>
+<div className="flex items-center gap-4">
 
-        <span style={{ cursor: "pointer" }} onClick={() => router.push("/leaderboard")}>
-          Leaderboard
-        </span>
 
-        <span style={{ cursor: "pointer" }} onClick={() => router.push("/history")}>
-          History
-        </span>
 
-        <span onClick={() => router.push("/admin")}>
-  Admin
-</span>
+{/* AVATAR */}
+<div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-bold text-black">
+{user?.name?.[0]?.toUpperCase() || "U"}
+</div>
 
-      </div>
+{/* LOGOUT */}
+<button
+onClick={handleLogout}
+className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm"
+>
+Logout
+</button>
 
-      <button onClick={logout} style={{
-        background: "red",
-        color: "white",
-        border: "none",
-        padding: "5px 10px",
-        borderRadius: 5,
-        cursor: "pointer"
-      }}>
-        Logout
-      </button>
+</div>
+</div>
 
-    </div>
-  );
+{/* NAV LINKS */}
+<div className="flex gap-6 text-sm font-medium">
+
+<Link href="/dashboard" className="hover:text-yellow-300">
+🏏 Predict
+</Link>
+
+<Link href="/leaderboard" className="hover:text-yellow-300">
+🏆 Leaderboard
+</Link>
+
+<Link href="/history" className="hover:text-yellow-300">
+📜 History
+</Link>
+
+<Link href="/admin" className="hover:text-yellow-300">
+⚙️ Admin
+</Link>
+
+</div>
+
+</div>
+);
 }
