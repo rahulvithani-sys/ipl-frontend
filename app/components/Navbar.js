@@ -61,6 +61,10 @@ Logout
 📜 History
 </Link>
 
+<Link href="/defaults" className="hover:text-yellow-300">
+⚙️ Defaults
+</Link>
+
 <Link href="/admin" className="hover:text-yellow-300">
 ⚙️ Admin
 </Link>
